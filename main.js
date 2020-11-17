@@ -76,7 +76,7 @@ const validatePhoneNumber = (phone) => {
   } else if (phone.length === 10) {
     correctPhoneNumber = `+7${phone}`;
   } else {
-    return alert('Введены некорректные данные');9623
+    return alert('Введены некорректные данные');
   }
 
   return correctPhoneNumber;
