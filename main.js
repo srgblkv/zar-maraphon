@@ -1,7 +1,3 @@
-const $getElById = (id) => {
-  return document.getElementById(id);
-};
-
 const $btnThunderJolt = $getElById('btn-thunderjolt');
 const $btnKick = $getElById('btn-kick');
 const $divLogs = $getElById('logs');
@@ -34,13 +30,17 @@ function init() {
   addLogNote('<span class="bold">Start game</span>')
   character.renderHP();
   enemy.renderHP();
-};
+}
+
+function $getElById(id) {
+  return document.getElementById(id);
+}
 
 function renderHealthStatus() {
   const healthStatusText = `${this.damagedHP} / ${this.defaultHP}`
   this.healthStatus.innerText = healthStatusText;
   return healthStatusText;
-};
+}
 
 function renderHealthBar() {
   const { defaultHP, damagedHP, healthBar } = this;
@@ -58,17 +58,17 @@ function renderHealthBar() {
   }
 
   healthBar.style.width = `${percentHP}%`;
-};
+}
 
 function renderHP() {
   this.renderHealthStatus();
   this.renderHealthBar();
-};
+}
 
 function changeHP(count) {
   this.damagedHP -= count;
   const log = this === enemy ? generateLog(this, character, count) : generateLog(this, enemy, count);
-  addLogNote(log);
+  addLogNote(log, this);
 
   if (this.damagedHP <= 0) {
     this.damagedHP = 0;
@@ -79,7 +79,7 @@ function changeHP(count) {
     addLogNote(`Бедный <span class="bold">${this.name}</span> проиграл бой!`);
   }
   this.renderHP();
-};
+}
 
 function randomNumber(num) {
   return Math.ceil(Math.random() * num);
@@ -87,14 +87,13 @@ function randomNumber(num) {
 
 function enemyAttack() {
   if (enemy.damagedHP > 0) {
-    addLogNote('...ожидаем ход противника.');
     setTimeout(() => {
       character.changeHP(randomNumber(20));
       $btnThunderJolt.disabled = false;
       $btnKick.disabled = false;
     }, 1000);
   }
-};
+}
 
 $btnThunderJolt.addEventListener('click', () => {
   enemy.changeHP(randomNumber(20));
@@ -121,14 +120,22 @@ function generateLog(firstPerson, secondPerson, count) {
     `<span class="bold">${firstPerson.name}</span> пошатнулся, и внезапно наглый <span class="bold">${secondPerson.name}</span> беспричинно ударил в ногу противника.`,
     `<span class="bold">${firstPerson.name}</span> расстроился, как вдруг, неожиданно <span class="bold">${secondPerson.name}</span> случайно влепил стопой в живот соперника.`,
     `<span class="bold">${firstPerson.name}</span> пытался что-то сказать, но вдруг, неожиданно <span class="bold">${secondPerson.name}</span> со скуки, разбил бровь сопернику.`
-  ]
+  ];
 
   return `${logs[randomNumber(logs.length - 1)]} <span class="bold">-${count} [${firstPerson.renderHealthStatus()}]</span>`;
-};
+}
 
-function addLogNote(log) {
+function addLogNote(log, person) {
   const $p = document.createElement('p');
   $p.innerHTML = log;
+
+  if (person === character) {
+    $p.style = 'background: rgba(255, 0, 0, .5);';
+  }
+  if (person === enemy) {
+    $p.style = 'background: rgba(0, 255, 0, .5);';
+  }
+
   $divLogs.insertBefore($p, $divLogs.firstChild);
 }
 
