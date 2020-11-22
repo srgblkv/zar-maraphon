@@ -31,7 +31,7 @@ const enemy = {
 };
 
 function init() {
-  console.log('Start game');
+  addLogNote('<span class="bold">Start game</span>')
   character.renderHP();
   enemy.renderHP();
 };
@@ -44,7 +44,7 @@ function renderHealthStatus() {
 
 function renderHealthBar() {
   const { defaultHP, damagedHP, healthBar } = this;
-  const percentHP = damagedHP / (defaultHP / 100); 
+  const percentHP = damagedHP / (defaultHP / 100);
 
 
   if (percentHP > 80) {
@@ -76,7 +76,7 @@ function changeHP(count) {
     $btnThunderJolt.disabled = true;
     $btnKick.disabled = true;
 
-    alert(`Бедный ${this.name} проиграл бой!`);
+    addLogNote(`Бедный <span class="bold">${this.name}</span> проиграл бой!`);
   }
   this.renderHP();
 };
@@ -86,12 +86,14 @@ function randomNumber(num) {
 }
 
 function enemyAttack() {
-  console.log('...ожидаем ход противника.');
-  setTimeout(() => {
-    character.changeHP(randomNumber(20));
-    $btnThunderJolt.disabled = false;
-    $btnKick.disabled = false;
-  }, 1000);
+  if (enemy.damagedHP > 0) {
+    addLogNote('...ожидаем ход противника.');
+    setTimeout(() => {
+      character.changeHP(randomNumber(20));
+      $btnThunderJolt.disabled = false;
+      $btnKick.disabled = false;
+    }, 1000);
+  }
 };
 
 $btnThunderJolt.addEventListener('click', () => {
@@ -109,24 +111,24 @@ $btnKick.addEventListener('click', () => {
 
 function generateLog(firstPerson, secondPerson, count) {
   const logs = [
-    `${firstPerson.name} вспомнил что-то важное, но неожиданно ${secondPerson.name}, не помня себя от испуга, ударил в предплечье врага.`,
-    `${firstPerson.name} поперхнулся, и за это ${secondPerson.name} с испугу приложил прямой удар коленом в лоб врага.`,
-    `${firstPerson.name} забылся, но в это время наглый ${secondPerson.name}, приняв волевое решение, неслышно подойдя сзади, ударил.`,
-    `${firstPerson.name} пришел в себя, но неожиданно ${secondPerson.name} случайно нанес мощнейший удар.`,
-    `${firstPerson.name} поперхнулся, но в это время ${secondPerson.name} нехотя раздробил кулаком \<вырезанно цензурой\> противника.`,
-    `${firstPerson.name} удивился, а ${secondPerson.name} пошатнувшись влепил подлый удар.`,
-    `${firstPerson.name} высморкался, но неожиданно ${secondPerson.name} провел дробящий удар.`,
-    `${firstPerson.name} пошатнулся, и внезапно наглый ${secondPerson.name} беспричинно ударил в ногу противника.`,
-    `${firstPerson.name} расстроился, как вдруг, неожиданно ${secondPerson.name} случайно влепил стопой в живот соперника.`,
-    `${firstPerson.name} пытался что-то сказать, но вдруг, неожиданно ${secondPerson.name} со скуки, разбил бровь сопернику.`
+    `<span class="bold">${firstPerson.name}</span> вспомнил что-то важное, но неожиданно <span class="bold">${secondPerson.name}</span>, не помня себя от испуга, ударил в предплечье врага.`,
+    `<span class="bold">${firstPerson.name}</span> поперхнулся, и за это <span class="bold">${secondPerson.name}</span> с испугу приложил прямой удар коленом в лоб врага.`,
+    `<span class="bold">${firstPerson.name}</span> забылся, но в это время наглый <span class="bold">${secondPerson.name}</span>, приняв волевое решение, неслышно подойдя сзади, ударил.`,
+    `<span class="bold">${firstPerson.name}</span> пришел в себя, но неожиданно <span class="bold">${secondPerson.name}</span> случайно нанес мощнейший удар.`,
+    `<span class="bold">${firstPerson.name}</span> поперхнулся, но в это время<span class="bold"> ${secondPerson.name}</span> нехотя раздробил кулаком \<вырезанно цензурой\> противника.`,
+    `<span class="bold">${firstPerson.name}</span> удивился, а <span class="bold">${secondPerson.name}</span> пошатнувшись влепил подлый удар.`,
+    `<span class="bold">${firstPerson.name}</span> высморкался, но неожиданно <span class="bold">${secondPerson.name}</span> провел дробящий удар.`,
+    `<span class="bold">${firstPerson.name}</span> пошатнулся, и внезапно наглый <span class="bold">${secondPerson.name}</span> беспричинно ударил в ногу противника.`,
+    `<span class="bold">${firstPerson.name}</span> расстроился, как вдруг, неожиданно <span class="bold">${secondPerson.name}</span> случайно влепил стопой в живот соперника.`,
+    `<span class="bold">${firstPerson.name}</span> пытался что-то сказать, но вдруг, неожиданно <span class="bold">${secondPerson.name}</span> со скуки, разбил бровь сопернику.`
   ]
 
-  return `${logs[randomNumber(logs.length - 1)]} -${count} ${firstPerson.renderHealthStatus()}`;
+  return `${logs[randomNumber(logs.length - 1)]} <span class="bold">-${count} [${firstPerson.renderHealthStatus()}]</span>`;
 };
 
 function addLogNote(log) {
   const $p = document.createElement('p');
-  $p.innerText = log
+  $p.innerHTML = log
   $divLogs.insertBefore($p, $divLogs.firstChild);
 }
 
