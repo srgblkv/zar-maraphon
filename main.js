@@ -1,75 +1,126 @@
-const $btnThunderJolt = document.getElementById('btn-thunderjolt');
-const $btnKick = document.getElementById('btn-kick');
+const $getElById = (id) => {
+  return document.getElementById(id);
+};
+
+const $btnThunderJolt = $getElById('btn-thunderjolt');
+const $btnKick = $getElById('btn-kick');
 
 const character = {
   name: 'Pikachu',
-  defaultHP: 100,
-  damagedHP: 100,
-  healthStatus: document.getElementById('health-character'),
-  healthBar: document.getElementById('progressbar-character')
+  defaultHP: 200,
+  damagedHP: 200,
+  healthStatus: $getElById('health-character'),
+  healthBar: $getElById('progressbar-character'),
+  changeHP,
+  renderHP,
+  renderHealthStatus,
+  renderHealthBar
 };
 
 const enemy = {
   name: 'Charmander',
   defaultHP: 100,
   damagedHP: 100,
-  healthStatus: document.getElementById('health-enemy'),
-  healthBar: document.getElementById('progressbar-enemy')
+  healthStatus: $getElById('health-enemy'),
+  healthBar: $getElById('progressbar-enemy'),
+  changeHP,
+  renderHP,
+  renderHealthStatus,
+  renderHealthBar
 };
 
-const init = () => {
+function init() {
   console.log('Start game');
-  renderHP(character);
-  renderHP(enemy);
+  character.renderHP();
+  enemy.renderHP();
 };
 
-const renderHealthStatus = (person) => {
-  person.healthStatus.innerText = `${person.damagedHP} / ${person.defaultHP}`;
+function renderHealthStatus() {
+  const healthStatusText = `${this.damagedHP} / ${this.defaultHP}`
+  this.healthStatus.innerText = healthStatusText;
+  return healthStatusText;
 };
 
-const renderHealthBar = (person) => {
-  const { damagedHP, healthBar } = person;
+function renderHealthBar() {
+  const { defaultHP, damagedHP, healthBar } = this;
+  const percentHP = damagedHP / (defaultHP / 100); 
+  console.log(percentHP);
 
-  if (damagedHP > 60) {
+
+  if (percentHP > 80) {
     healthBar.style.background = 'lime';
   }
-  if (damagedHP > 20 && damagedHP <= 60) {
+  if (percentHP > 20 && percentHP <= 80) {
     healthBar.style.background = 'yellow';
   }
-  if (damagedHP <= 20) {
+  if (percentHP <= 20) {
     healthBar.style.background = 'red';
   }
-  healthBar.style.width = `${damagedHP}%`;
+
+  healthBar.style.width = `${percentHP}%`;
 };
 
-const renderHP = (person) => {
-  renderHealthStatus(person);
-  renderHealthBar(person);
+function renderHP() {
+  this.renderHealthStatus();
+  this.renderHealthBar();
 };
 
-const changeHP = (count, person) => {
-  if (count > person.damagedHP) {
-    person.damagedHP = 0;
-    alert(`Бедный ${person.name} проиграл бой!`);
+function changeHP(count) {
+  this.damagedHP -= count;
+  const log = this === enemy ? generateLog(this, character, count) : generateLog(this, enemy, count);
+  console.log(log)
+
+  if (this.damagedHP <= 0) {
+    this.damagedHP = 0;
+
     $btnThunderJolt.disabled = true;
     $btnKick.disabled = true;
-  } else {
-    person.damagedHP -= count;
+
+    alert(`Бедный ${this.name} проиграл бой!`);
   }
-  renderHP(person);
+  this.renderHP();
 };
 
-const randomNumber = (num) => {
+function randomNumber(num) {
   return Math.ceil(Math.random() * num);
 }
 
+function enemyAttack() {
+  console.log('...ожидаем ход противника.');
+  setTimeout(() => {
+    character.changeHP(randomNumber(20));
+    $btnThunderJolt.disabled = false;
+    $btnKick.disabled = false;
+  }, 1000);
+};
+
 $btnThunderJolt.addEventListener('click', () => {
-  changeHP(randomNumber(20), character);
-  changeHP(randomNumber(20), enemy);
+  enemy.changeHP(randomNumber(20));
+
+  $btnThunderJolt.disabled = true;
+  $btnKick.disabled = true;
+
+  enemyAttack();
 });
 
 $btnKick.addEventListener('click', () => {
-  changeHP(randomNumber(10), enemy);
+  enemy.changeHP(randomNumber(10));
 });
+function generateLog(firstPerson, secondPerson, count) {
+  const logs = [
+    `${firstPerson.name} вспомнил что-то важное, но неожиданно ${secondPerson.name}, не помня себя от испуга, ударил в предплечье врага.`,
+    `${firstPerson.name} поперхнулся, и за это ${secondPerson.name} с испугу приложил прямой удар коленом в лоб врага.`,
+    `${firstPerson.name} забылся, но в это время наглый ${secondPerson.name}, приняв волевое решение, неслышно подойдя сзади, ударил.`,
+    `${firstPerson.name} пришел в себя, но неожиданно ${secondPerson.name} случайно нанес мощнейший удар.`,
+    `${firstPerson.name} поперхнулся, но в это время ${secondPerson.name} нехотя раздробил кулаком \<вырезанно цензурой\> противника.`,
+    `${firstPerson.name} удивился, а ${secondPerson.name} пошатнувшись влепил подлый удар.`,
+    `${firstPerson.name} высморкался, но неожиданно ${secondPerson.name} провел дробящий удар.`,
+    `${firstPerson.name} пошатнулся, и внезапно наглый ${secondPerson.name} беспричинно ударил в ногу противника.`,
+    `${firstPerson.name} расстроился, как вдруг, неожиданно ${secondPerson.name} случайно влепил стопой в живот соперника.`,
+    `${firstPerson.name} пытался что-то сказать, но вдруг, неожиданно ${secondPerson.name} со скуки, разбил бровь сопернику.`
+  ]
+
+  return `${logs[randomNumber(logs.length - 1)]} -${count} ${firstPerson.renderHealthStatus()}`;
+};
 
 init();
