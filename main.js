@@ -4,6 +4,7 @@ const $getElById = (id) => {
 
 const $btnThunderJolt = $getElById('btn-thunderjolt');
 const $btnKick = $getElById('btn-kick');
+const $divLogs = $getElById('logs');
 
 const character = {
   name: 'Pikachu',
@@ -44,7 +45,6 @@ function renderHealthStatus() {
 function renderHealthBar() {
   const { defaultHP, damagedHP, healthBar } = this;
   const percentHP = damagedHP / (defaultHP / 100); 
-  console.log(percentHP);
 
 
   if (percentHP > 80) {
@@ -68,7 +68,7 @@ function renderHP() {
 function changeHP(count) {
   this.damagedHP -= count;
   const log = this === enemy ? generateLog(this, character, count) : generateLog(this, enemy, count);
-  console.log(log)
+  addLogNote(log);
 
   if (this.damagedHP <= 0) {
     this.damagedHP = 0;
@@ -106,6 +106,7 @@ $btnThunderJolt.addEventListener('click', () => {
 $btnKick.addEventListener('click', () => {
   enemy.changeHP(randomNumber(10));
 });
+
 function generateLog(firstPerson, secondPerson, count) {
   const logs = [
     `${firstPerson.name} вспомнил что-то важное, но неожиданно ${secondPerson.name}, не помня себя от испуга, ударил в предплечье врага.`,
@@ -122,5 +123,11 @@ function generateLog(firstPerson, secondPerson, count) {
 
   return `${logs[randomNumber(logs.length - 1)]} -${count} ${firstPerson.renderHealthStatus()}`;
 };
+
+function addLogNote(log) {
+  const $p = document.createElement('p');
+  $p.innerText = log
+  $divLogs.insertBefore($p, $divLogs.firstChild);
+}
 
 init();
