@@ -128,7 +128,7 @@ function generateLog(firstPerson, secondPerson, count) {
 
 function addLogNote(log) {
   const $p = document.createElement('p');
-  $p.innerHTML = log
+  $p.innerHTML = log;
   $divLogs.insertBefore($p, $divLogs.firstChild);
 }
 
