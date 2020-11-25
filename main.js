@@ -26,6 +26,40 @@ const enemy = {
   renderHealthBar
 };
 
+// здесь объявление и присваевание функции для каждой кнопки --------------------------------
+const counterBtnThunderJolt = counterClick();
+const counterBtnKick = counterClick();
+
+$btnThunderJolt.addEventListener('click', () => {
+  enemy.changeHP(randomNumber(20));
+  const maxUsageThunderJolt = 6;
+  const count = counterBtnThunderJolt(maxUsageThunderJolt);   // использование с ограничением
+  if (count && count > 0) {
+    console.log(`Осталось использований ${(maxUsageThunderJolt - count) + 1}`);
+    enemyAttack();
+  } else {
+    enemyAttack(true);
+  }
+  $btnThunderJolt.disabled = true;
+  $btnKick.disabled = true;
+});
+
+$btnKick.addEventListener('click', () => {
+  enemy.changeHP(randomNumber(10));
+  const count = counterBtnKick(); // использование без ограничения
+  console.log(`Kick был использован ${count}`)
+});
+
+// функция-счетчик
+function counterClick(count = 0) {
+  return function (max) {
+    if (max && count === max) {
+      return;
+    }
+    return ++count;
+  }
+}
+//---------------------------------------------------------------------------------------------
 function init() {
   addLogNote('<span class="bold">Start game</span>')
   character.renderHP();
@@ -85,28 +119,15 @@ function randomNumber(num) {
   return Math.ceil(Math.random() * num);
 }
 
-function enemyAttack() {
+function enemyAttack(skillOneDisabled = false, skillTwoDisabled = false) {
   if (enemy.damagedHP > 0) {
     setTimeout(() => {
       character.changeHP(randomNumber(20));
-      $btnThunderJolt.disabled = false;
-      $btnKick.disabled = false;
+      $btnThunderJolt.disabled = skillOneDisabled;
+      $btnKick.disabled = skillTwoDisabled;
     }, 1000);
   }
 }
-
-$btnThunderJolt.addEventListener('click', () => {
-  enemy.changeHP(randomNumber(20));
-
-  $btnThunderJolt.disabled = true;
-  $btnKick.disabled = true;
-
-  enemyAttack();
-});
-
-$btnKick.addEventListener('click', () => {
-  enemy.changeHP(randomNumber(10));
-});
 
 function generateLog(firstPerson, secondPerson, count) {
   const logs = [
