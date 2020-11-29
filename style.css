@@ -68,6 +68,10 @@ body {
   opacity: 0.4;
 }
 
+.control .button {
+  text-transform: capitalize;
+}
+
 .control {
   width: 320px;
   height: 260px;
@@ -186,7 +190,10 @@ body {
   -webkit-transform: rotate(-45deg);
   transform: rotate(-45deg);
 }
-.pokemon .sprite {
+
+.pokemon .sprite,
+#sprite-character,
+#sprite-enemy {
   position: absolute;
   top: 40%;
   left: 50%;
