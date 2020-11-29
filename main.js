@@ -4,7 +4,7 @@ import { addLogNote } from './src/modules/log-generator.js';
 import { pokemons } from './src/data/pokemons.js';
 
 const $elLogs = document.getElementById('logs');
-const $elControl = document.querySelector('.control')
+const $elControl = document.querySelector('.control');
 
 // функции для инициализации персонажей
 const initCharacter = () => {
@@ -12,7 +12,7 @@ const initCharacter = () => {
     ...pokemons[randomNumber(pokemons.length) - 1],
     selectors: 'character',
   });
-}
+};
 
 const initEnemy = (character, enemyName) => {
   let enemy;
@@ -24,9 +24,8 @@ const initEnemy = (character, enemyName) => {
   return new Pokemon({
     ...enemy,
     selectors: 'enemy'
-  })
-
-}
+  });
+};
 // ----------------------------------------
 // атака врага 
 const enemyAttack = () => {
@@ -36,18 +35,18 @@ const enemyAttack = () => {
     setTimeout(() => {
       const attack = attacks[randomNumber(attacks.length) - 1];
       const { minDamage, maxDamage } = attack;
-      const dmg = randomNumber(maxDamage, minDamage)
+      const dmg = randomNumber(maxDamage, minDamage);
       character.changeHP(dmg);
 
       if (character.hp.current <= 0) {
-        renderBtn(true, true)
+        renderBtn(true, true);
       }
 
       addLogNote(character, enemy, dmg, $elLogs);
     }, 300);
 
   }
-}
+};
 // -------------------------------------------
 
 // рендер кнопок вместо startGame
@@ -55,7 +54,7 @@ const renderBtn = (startGame, endGame) => {
   const $allButtons = document.querySelectorAll('button');
   $allButtons.forEach(button => {
     button.remove();
-  })
+  });
 
   if (startGame && !endGame) {
     character.attacks.forEach(item => {
@@ -75,8 +74,8 @@ const renderBtn = (startGame, endGame) => {
         } else {
           enemy = initEnemy(character, enemy.name);
         }
-      })
-    })
+      });
+    });
   } else if (startGame && endGame) {
     const $btn = document.createElement('button');
     $btn.classList.add('button');
@@ -94,10 +93,10 @@ const renderBtn = (startGame, endGame) => {
     $btn.textContent = 'Start game';
     $btn.addEventListener('click', () => {
       renderBtn(true);
-    })
+    });
     $elControl.appendChild($btn);
   }
-}
+};
 // -------------------------------------------------------
 
 // инициализация персонажей
