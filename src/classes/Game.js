@@ -1,46 +1,117 @@
 import Pokemon from '../classes/Pokemon.js';
-import { randomNumber } from '../modules/utils.js';
-import { pokemons } from '../data/pokemons.js';
+import Request from '../classes/Request.js';
+import { counterClick, randomNumber } from '../modules/utils.js';
+import { addLogNote } from '../modules/log-generator.js';
 
-class Game {
+class Selectors {
   constructor() {
-    this.character, 
-    this.enemy,
-    this.startGame()
+    this.$elLogs = document.getElementById('logs');
+    this.$elControl = document.querySelector('.control');
+  }
+}
+
+class Game extends Selectors {
+  constructor() {
+    super();
+    this.character;
+    this.enemy;
   }
 
-  startGame = () => {
-    this.character = this.initCharacter();
-    this.enemy = this.initEnemy(this.character);
-  };
+  startGame = async () => {
+    this.pokemons = await new Request().getPokemons();
+    this.character = await this.initCharacter();
+    this.enemy = await this.initEnemy(this.character);
+    await this.renderBtn(false);
+  }
 
   resetGame = () => {
     this.startGame();
-  };
+  }
 
-  initCharacter = () => {
-    return new Pokemon({
-      ...pokemons[randomNumber(pokemons.length) - 1],
-      selectors: 'character',
+  initCharacter = async () => {
+    return await new Pokemon({
+      ...this.pokemons[randomNumber(this.pokemons.length) - 1],
+      selectors: 'character'
     });
-  };
+  }
 
-  initEnemy = (character, enemyName) => {
+  initEnemy = async (character, enemyName) => {
     let enemy;
-    // проверка что-бы персонажы не повторялись
     do {
-      enemy = pokemons[randomNumber(pokemons.length) - 1];
+      enemy = this.pokemons[randomNumber(this.pokemons.length) - 1];
     } while (enemy.name === character.name || enemy.name === enemyName);
-
-    return new Pokemon({
+    return await new Pokemon({
       ...enemy,
       selectors: 'enemy'
     });
-  };
+  }
 
-  changeEnemy = () => {
-    this.enemy = this.initEnemy(this.character, this.enemy.name);
-  };
+  changeEnemy = async () => {
+    this.enemy = await this.initEnemy(this.character, this.enemy.name);
+  }
+
+  createButton = (textContent, cb) => {
+    const $btn = document.createElement('button');
+    $btn.classList.add('button');
+    $btn.textContent = textContent;
+    $btn.addEventListener('click', cb);
+    this.$elControl.appendChild($btn);
+  }
+
+  enemyAttack = (dmg) => {
+    let { hp: { current } } = this.enemy;
+    if (current > 0) {
+      setTimeout(() => {
+        this.character.changeHP(dmg);
+        if (this.character.hp.current <= 0) {
+          this.renderBtn(true, true);
+        }
+        addLogNote(this.character, this.enemy, dmg, this.$elLogs);
+      }, 500);
+    }
+  }
+
+  renderBtn = async (startGame, endGame) => {
+    const $allButtons = document.querySelectorAll('button');
+    $allButtons.forEach(button => {
+      button.remove();
+    });
+
+    if (startGame && !endGame) {
+      this.character.attacks.forEach(item => {
+        const { id, name, maxCount, maxDamage, minDamage } = item;
+        const $btn = document.createElement('button');
+        $btn.classList.add('button');
+        $btn.textContent = `${name} [${minDamage} - ${maxDamage}]`;
+        this.$elControl.appendChild($btn);
+        const btnCounter = counterClick($btn, maxCount)
+        $btn.addEventListener('click', async () => {
+          const damageSkills = await new Request().getDamageSkills(this.character.id, id, this.enemy.id);
+          const dmg = damageSkills.kick.player2;
+          this.enemy.changeHP(dmg);
+          addLogNote(this.enemy, this.character, dmg, this.$elLogs);
+          btnCounter();
+          if (this.enemy.hp.current > 0) {
+            this.enemyAttack(damageSkills.kick.player1);
+          } else {
+            this.changeEnemy(this.character, this.enemy.name);
+          }
+          $allButtons.forEach(btn => {
+            btn.disabled = true;
+          })
+        });
+      });
+    } else if (startGame && endGame) {
+      this.createButton('Restart', () => {
+        this.renderBtn(false);
+        this.resetGame();
+      });
+    } else {
+      this.createButton('Start game', () => {
+        this.renderBtn(true);
+      });
+    }
+  }
 }
 
 export default Game;
