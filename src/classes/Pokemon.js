@@ -1,12 +1,14 @@
 class Selectors {
   constructor(name) {
+    this.elImg = document.getElementById(`sprite-${name}`)
+    this.elName = document.getElementById(`name-${name}`);
     this.elHP = document.getElementById(`health-${name}`);
     this.elProgressbar = document.getElementById(`progressbar-${name}`);
   }
 }
 
 class Pokemon extends Selectors {
-  constructor({ name, hp, type, selectors }) {
+  constructor({ name, hp, type, attacks, img, selectors }) {
     super(selectors);
     this.name = name;
     this.hp = {
@@ -14,7 +16,21 @@ class Pokemon extends Selectors {
       total: hp,
     };
     this.type = type;
+    this.attacks = attacks;
+    this.img = img;
     this.renderHP();
+    this.renderName();
+    this.renderImg();
+  }
+
+  renderName = () => {
+    const { elName } = this;
+    elName.textContent = this.name;
+  }
+
+  renderImg = () => {
+    const { elImg } = this;
+    elImg.src = `${this.img}`
   }
 
   renderHP = () => {
@@ -33,8 +49,6 @@ class Pokemon extends Selectors {
     this.hp.current -= count;
     if (this.hp.current <= 0) {
       this.hp.current = 0;
-
-      console.log(`Бедный <span class="bold">${this.name}</span> проиграл бой!`);
     }
     this.renderHP();
     cb && cb(count);
@@ -43,14 +57,14 @@ class Pokemon extends Selectors {
   renderHealthBar = () => {
     const { hp: { current, total }, elProgressbar } = this;
     const percentHP = current / (total / 100);
-    if (percentHP > 80) {
-      elProgressbar.style.background = 'lime';
+
+    if (percentHP > 20 && percentHP < 60) {
+      elProgressbar.classList.add('low');
     }
-    if (percentHP > 20 && percentHP <= 80) {
-      elProgressbar.style.background = 'yellow';
-    }
-    if (percentHP <= 20) {
-      elProgressbar.style.background = 'red';
+    else if (percentHP <= 20) {
+      elProgressbar.classList.add('critical');
+    } else {
+      elProgressbar.classList.remove('critical', 'low');
     }
     elProgressbar.style.width = `${percentHP}%`;
   }
