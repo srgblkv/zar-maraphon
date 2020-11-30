@@ -21,7 +21,7 @@ class Game extends Selectors {
     this.pokemons = await new Request().getPokemons();
     this.character = await this.initCharacter();
     this.enemy = await this.initEnemy(this.character);
-    await this.renderBtn(false);
+    this.renderBtn(false);
   }
 
   resetGame = () => {
