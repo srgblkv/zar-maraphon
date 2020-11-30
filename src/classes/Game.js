@@ -1,7 +1,7 @@
 import Pokemon from '../classes/Pokemon.js';
 import Request from '../classes/Request.js';
 import { counterClick, randomNumber } from '../modules/utils.js';
-import { addLogNote } from '../modules/log-generator.js';
+import { addLogNote, removeAllLogs } from '../modules/log-generator.js';
 
 class Selectors {
   constructor() {
@@ -26,6 +26,7 @@ class Game extends Selectors {
 
   resetGame = () => {
     this.startGame();
+    removeAllLogs();
   }
 
   initCharacter = async () => {

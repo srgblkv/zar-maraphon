@@ -19,6 +19,14 @@ const generateLog = (defendingPerson, attackingPerson, count) => {
 
 export const addLogNote = (defendingPerson, attackingPerson, count, el) => {
   const $p = document.createElement('p');
+  $p.classList.add('attack-log');
   $p.innerHTML = generateLog(defendingPerson, attackingPerson, count);
   el.insertBefore($p, el.firstChild);
+}
+
+export const removeAllLogs = () => {
+  const $logs = document.querySelectorAll('.attack-log');
+  $logs.forEach((log) => {
+    log.remove();
+  })
 }
