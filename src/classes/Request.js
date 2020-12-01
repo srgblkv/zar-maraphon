@@ -4,9 +4,8 @@ class Request {
   }
 
   getDamageSkills = async (characterId, attackId, enemyId) => {
-    const attacks = await fetch(`${this.url}api/fight?player1id=${characterId}&attackId=${attackId}&player2id=${enemyId}`,
-      { headers: { 'Access-Control-Allow-Origin': 'no-cors' } })
-    return attacks.json()
+    const attacks = await fetch(`${this.url}api/fight?player1id=${characterId}&attackId=${attackId}&player2id=${enemyId}`);
+    return attacks.json();
   }
 
   getPokemons = async () => {
