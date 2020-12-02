@@ -8,9 +8,9 @@ export const counterClick = (el, count = 6) => {
   el.innerText = `${innerText} (${count})`;
   return () => {
     count--;
-    if (count === 0) {
+    if (count <= 0) {
       el.disabled = true;
-    }
+    } 
     el.innerText = `${innerText} (${count})`;
     return count;
   }

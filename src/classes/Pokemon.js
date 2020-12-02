@@ -8,8 +8,9 @@ class Selectors {
 }
 
 class Pokemon extends Selectors {
-  constructor({ name, hp, type, attacks, img, selectors }) {
+  constructor({ id, name, hp, type, attacks, img, selectors }) {
     super(selectors);
+    this.id = id;
     this.name = name;
     this.hp = {
       current: hp,
@@ -57,7 +58,6 @@ class Pokemon extends Selectors {
   renderHealthBar = () => {
     const { hp: { current, total }, elProgressbar } = this;
     const percentHP = current / (total / 100);
-
     if (percentHP > 20 && percentHP < 60) {
       elProgressbar.classList.add('low');
     }
